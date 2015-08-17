@@ -1,18 +1,24 @@
+import AltContainer from 'alt/AltContainer';
 import React from 'react';
 import uuid from 'node-uuid';
 import Notes from './Notes.jsx';
 import NoteActions from '../actions/NoteActions';
 import NoteStore from '../stores/NoteStore';
-import connect from '../decorators/connect';
 
-@connect(NoteStore)
 export default class App extends React.Component {
     render() {
         const notes = this.props.notes;
         return (
             <div>
                 <button onClick={this.addItem}>+</button>
-                <Notes items={notes} onEdit={this.itemEdited}/>
+                <AltContainer
+                    stores={[NoteStore]}
+                    inject={{
+                        items: () => NoteStore.getState().notes
+                    }}
+                >
+                    <Notes items={notes} onEdit={this.itemEdited}/>
+                </AltContainer>
             </div>
         );
     }
