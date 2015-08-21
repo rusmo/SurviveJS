@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default class Note extends React.Component {
+export default class Editable extends React.Component {
     constructor(props) {
         super(props);
 
@@ -16,11 +16,12 @@ export default class Note extends React.Component {
     }
 
 	render() {
+        const {value, onEdit, ...props} = this.props;
 	    const isEditing = this.state.editing;
 
 	    return (
-            <div>
-        	{isEditing ? this.renderEdit() : this.renderValue()}
+      		<div {...props}>
+        	    {isEditing ? this.renderEdit() : this.renderValue()}
             </div>
 	    );
 	}
@@ -34,7 +35,17 @@ export default class Note extends React.Component {
     }
 
     renderValue() {
-        return <div onClick={this.edit}>{this.props.value}</div>;
+        const onDelete = this.props.onDelete;
+        return (
+            <div onClick={this.edit}>
+                <span className='value'>{this.props.value}</span>
+                { onDelete ? this.renderDelete() : null }
+            </div>
+    );
+    }
+
+    renderDelete() {
+        return <button className='delete' onClick={this.props.onDelete}>x</button>;
     }
 
     edit() {

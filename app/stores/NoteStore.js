@@ -6,6 +6,10 @@ class NoteStore {
     constructor() {
         this.bindActions(NoteActions);
         this.notes = this.notes || [];
+
+        this.exportPublicMethods({
+           get: this.get.bind(this)
+        });
     }
 
     create(note) {
@@ -50,6 +54,17 @@ class NoteStore {
           console.warn('Failed to find note', notes, id);
         }
         return noteIndex;
+    }
+
+    get(ids) {
+        const notes = this.notes || [];
+        const notesIds = notes.map((note) => note.id);
+
+        if(ids) {
+            return ids.map((id) => notes[notesIds.indexOf(id)]);
+        }
+
+        return [];
     }
 }
 
