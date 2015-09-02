@@ -1,7 +1,8 @@
 import uuid from 'node-uuid';
 import alt from '../libs/alt';
 import LaneActions from '../actions/LaneActions';
-import NoteStore from '../stores/NoteStore.js';
+import update from 'react/lib/update';
+import NoteStore from './NoteStore';
 
 class LaneStore {
     constructor() {
@@ -41,8 +42,8 @@ class LaneStore {
         }
 
         this.setState({
-            lanes: lanes.slice(o, targetId).concat(lanes.slice(targetId + 1))
-        })
+            lanes: lanes.slice(0, targetId).concat(lanes.slice(targetId + 1))
+        });
     }
 
     attachToLane({laneId, noteId}) {
@@ -58,6 +59,8 @@ class LaneStore {
             return;
         }
 
+        this.removeNote(noteId);
+
         const lane = lanes[targetId];
 
         if (lane.notes.indexOf(noteId) === -1) {
@@ -66,6 +69,21 @@ class LaneStore {
         } else {
             console.warn('Already attached note to lane', lanes);
         }
+    }
+
+    removeNote(noteId) {
+        const lanes = this.lanes;
+        const removeLane = lanes.filter((lane) => {
+            return lane.notes.indexOf(noteId) >= 0;
+        })[0];
+
+        if (!removeLane) {
+            return;
+        }
+
+        const removeNoteIndex = removeLane.notes.indexOf(noteId);
+
+        removeLane.notes = removeLane.notes.slice(0, removeNoteIndex).concat(removeLane.notes.slice(removeNoteIndex + 1));
     }
 
     detachFromLane({laneId, noteId}) {
@@ -101,6 +119,32 @@ class LaneStore {
         }
 
         return laneIndex;
+    }
+
+    move({sourceNote, targetNote}) {
+        console.log('source', sourceNote, 'target', targetNote);
+        const lanes = this.lanes;
+        const sourceId = sourceNote.id;
+        const targetId = targetNote.id;
+        const sourceLane = lanes.filter((lane) => {
+            return lane.notes.indexOf(sourceId) >= 0;
+    })[0];
+        const targetLane = lanes.filter((lane) => {
+            return lane.notes.indexOf(targetId) >= 0;
+    })[0];
+        const sourceNoteIndex = sourceLane.notes.indexOf(sourceId);
+        const targetNoteIndex = targetLane.notes.indexOf(targetId);
+
+        if(sourceLane === targetLane) {
+            sourceLane.notes = update(sourceLane.notes, {
+               $splice : [
+                   [sourceNoteIndex, 1], [targetNoteIndex, 0, sourceId]
+            ]});
+        } else {
+            sourceLane.notes.splice(sourceNoteIndex, 1);
+            targetLane.notes.splice(targetNoteIndex, 0, sourceId);
+        }
+        this.setState({lanes});
     }
 }
 
