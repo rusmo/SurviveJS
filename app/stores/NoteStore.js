@@ -57,14 +57,7 @@ class NoteStore {
     }
 
     get(ids) {
-        const notes = this.notes || [];
-        const notesIds = notes.map((note) => note.id);
-
-        if(ids) {
-            return ids.map((id) => notes[notesIds.indexOf(id)]);
-        }
-
-        return [];
+        return (ids || []).map((id) => this.notes[this.findNote(id)]).filter((a) => a);
     }
 }
 
