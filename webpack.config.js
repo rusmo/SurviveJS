@@ -33,24 +33,38 @@ var common = {
 if(TARGET === 'dev') {
 	module.exports = merge(common, {
 		devtool: 'eval',
+        module: {
+          preLoaders: [
+            {
+              test: /\.jsx?$/,
+              // we are using `eslint-loader` explicitly since
+              // we have ESLint module installed. This way we
+              // can be certain that it uses the right loader
+              loader: 'eslint-loader',
+              include: path.resolve(ROOT_PATH, 'app')
+            }
+          ],
+          loaders: [
+            {
+               test: /\.jsx?$/,
+              loaders: ['react-hot', 'babel?stage=1'],
+              include: path.resolve(ROOT_PATH, 'app')
+            }
+          ]}
+    });
+}
+
+if (TARGET === 'build') {
+  module.exports = merge(common, {
+    devtool: 'source-map',
     module: {
-      preLoaders: [
-        {
-          test: /\.jsx?$/,
-          // we are using `eslint-loader` explicitly since
-          // we have ESLint module installed. This way we
-          // can be certain that it uses the right loader
-          loader: 'eslint-loader',
-          include: path.resolve(ROOT_PATH, 'app')
-        }
-      ],
       loaders: [
         {
-           test: /\.jsx?$/,
-          loaders: ['react-hot', 'babel?stage=1'],
+          test: /\.jsx?$/,
+          loaders: 'babel',
           include: path.resolve(ROOT_PATH, 'app')
         }
       ]
-    },
-	});
+    }
+  });
 }

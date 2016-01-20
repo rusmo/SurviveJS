@@ -4,6 +4,7 @@
   "description": "survivejs tutorial",
   "main": "index.js",
   "scripts": {
+    "build": "webpack",
     "start": "SET TARGET=dev&& webpack-dev-server --progress --colors --hot --inline --history-api-fallback",
     "lint": "eslint . --ext .js --ext .jsx"
   },
